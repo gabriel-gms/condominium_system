@@ -38,24 +38,14 @@ class AuthController extends Controller
         $password = $request->input('password');
         $hash = Hash::make($password);
 
-        $user = new User();
-        $user->name = $name;
-        $user->email = $email;
-        $user->cpf = $cpf;
-        $user->password = $hash;
-        $user->save();
-
-        $token = Auth::guard('api')->attempt(['cpf' => $cpf, 'password' => $password], true);
-        if(!$token){
-            $array['error'] = true;
-            $array['message'] = 'Error generating token';
-            return response()->json($array);
-        }
-        $array['token'] = $token;
-        
-        $user = Auth::guard('api')->user();
+        $user = User::create([
+            'name' => $name,
+            'email' => $email,
+            'cpf' => $cpf,
+            'password' => $hash,
+        ]);
         $array['user'] = $user;
-        
+
         $properties = Unit::select('id', 'name')
         ->where('id_owner', $user->id)
         ->get();
@@ -76,18 +66,29 @@ class AuthController extends Controller
         if($validator->fails()){
             $array['error'] = true;
             $array['message'] = $validator->errors()->first();
-            return response()->json($array, 400);
+            return response()->json($array);
         }
 
         $cpf = $request->input('cpf');
         $password = $request->input('password');
 
+        $user = User::where('cpf', $cpf)->first();
+        if(!$user || !Hash::check($password, $user->password)){
+            $array['error'] = true;
+            $array['message'] = 'Invalid credentials';
+            return response()->json($array);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+        $array['token'] = $token;
+
+        /* Tentativa de rodar o jwt
         if(Auth::guard('api')->attempt(['cpf' => $cpf, 'password' => $password])){
-            $token = Auth::guard('api')->attempt(['cpf' => $cpf, 'password' => $password]);
+            $token = Auth::attempt(['cpf' => $cpf, 'password' => $password]);
             if(!$token){
                 $array['error'] = true;
                 $array['message'] = 'Error generating token';
-                return response()->json($array);
+                return response()->json([$array]);
             }
             $array['token'] = $token;
 
@@ -103,7 +104,19 @@ class AuthController extends Controller
         } else {
             $array['error'] = true;
             $array['message'] = 'Invalid credentials';
-            return response()->json($array);
+            return response()->json([$array]);
+        }
+        */
+        return response()->json([$array]);
+    }
+
+    public function validateToken(){
+        $array = ['error' => false];
+
+        $user = Auth::user();
+        if(!$user){
+            $array['error'] = true;
+            $array['message'] = 'Invalid token';
         }
 
         return response()->json($array);
