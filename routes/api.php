@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     Route::get('/walls', [WallController::class, 'getAll']);
-    Route::post('/walls/{param}/like', [WallController::class, 'like']);
+    Route::post('/walls/{id}/like', [WallController::class, 'like']);
 
     Route::get('/documents', [DocumentController::class, 'getAll']);
 
