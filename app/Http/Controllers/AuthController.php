@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Unit;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -32,17 +33,11 @@ class AuthController extends Controller
             return response()->json($array, 400);
         }
 
-        $name = $request->input('name');
-        $email = $request->input('email');
-        $cpf = $request->input('cpf');
-        $password = $request->input('password');
-        $hash = Hash::make($password);
-
         $user = User::create([
-            'name' => $name,
-            'email' => $email,
-            'cpf' => $cpf,
-            'password' => $hash,
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'cpf' => $request->input('cpf'),
+            'password' => Hash::make($request->input('password')),
         ]);
         $array['user'] = $user;
 
@@ -69,11 +64,9 @@ class AuthController extends Controller
             return response()->json($array);
         }
 
-        $cpf = $request->input('cpf');
-        $password = $request->input('password');
-
-        $user = User::where('cpf', $cpf)->first();
-        if(!$user || !Hash::check($password, $user->password)){
+        $user = User::where('cpf', $request->input('cpf'))->first();
+        $validate_password = Hash::check($request->input('password'), $user->password);
+        if(!$user || !$validate_password){
             $array['error'] = true;
             $array['message'] = 'Invalid credentials';
             return response()->json($array);
@@ -81,44 +74,38 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
         $array['token'] = $token;
+        $array['user'] = $user;
 
-        /* Tentativa de rodar o jwt
-        if(Auth::guard('api')->attempt(['cpf' => $cpf, 'password' => $password])){
-            $token = Auth::attempt(['cpf' => $cpf, 'password' => $password]);
-            if(!$token){
-                $array['error'] = true;
-                $array['message'] = 'Error generating token';
-                return response()->json([$array]);
-            }
-            $array['token'] = $token;
-
-            $user = Auth::guard('api')->user();
-            $array['user'] = $user;
-
-            $properties = Unit::select('id', 'name')
-            ->where('id_owner', $user->id)
-            ->get();
-
-            $array['user']['properties'] = $properties;
-
-        } else {
-            $array['error'] = true;
-            $array['message'] = 'Invalid credentials';
-            return response()->json([$array]);
-        }
-        */
         return response()->json([$array]);
     }
 
-    public function validateToken(){
+    public function validateToken(Request $request){
         $array = ['error' => false];
 
-        $user = Auth::user();
+        $user = $request->user();
         if(!$user){
             $array['error'] = true;
             $array['message'] = 'Invalid token';
+            return response()->json($array);
         }
+        $array['user'] = $user;
 
         return response()->json($array);
+    }
+
+    public function logout(Request $request){
+        $validateToken = PersonalAccessToken::findToken($request->bearerToken());
+
+        if($validateToken){
+            $validateToken->delete();
+
+            return response()->json([
+                'message' => 'token removed'
+            ], 201);
+        }
+
+        return response()->json([
+            'message' => 'invalid token'
+        ], 500);
     }
 }
