@@ -30,9 +30,9 @@ Route::middleware('auth:sanctum')->group(function (){
 
     Route::get('/documents', [DocumentController::class, 'getAll']);
 
-    Route::get('/warnings', [FoundAndLostController::class, 'getMyWarnings']);
-    Route::post('/warnings', [FoundAndLostController::class, 'setWarning']);
-    Route::post('/warnings/file', [FoundAndLostController::class, 'setWarningFile']);
+    Route::get('/warnings', [WarningController::class, 'getMyWarnings']);
+    Route::post('/warnings', [WarningController::class, 'setWarning']);
+    Route::post('/warnings/file', [WarningController::class, 'setWarningFile']);
 
     Route::get('/billets', [BilletController::class, 'getMyBillets']);
 
