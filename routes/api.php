@@ -44,7 +44,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/units/{param}/addPerson', [UnitController::class, 'createPersonInUnit']);
     Route::post('/units/{param}/addPet', [UnitController::class, 'createPetInUnit']);
     Route::post('/units/{param}/addVehicle', [UnitController::class, 'createVehicleInUnit']);
-    Route::post('/units/{param}/addPerson', [UnitController::class, 'removePersonInUnit']);
+    Route::delete('/units/{param}/addPerson', [UnitController::class, 'removePersonInUnit']);
     Route::post('/units/{param}/addPet', [UnitController::class, 'removePetInUnit']);
     Route::post('/units/{param}/addVehicle', [UnitController::class, 'removeVehicleInUnit']);
 

@@ -7,6 +7,9 @@ use App\Models\UnitPeople;
 use App\Models\UnitPet;
 use App\Models\UnitVehicle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+use function Laravel\Prompts\error;
 
 class UnitController extends Controller
 {
@@ -25,6 +28,27 @@ class UnitController extends Controller
             'people' => $people_by_id_unit,
             'vehicles' => $vehicles_by_id_unit,
             'pets' => $pets_by_id_unit
+        ]);
+    }
+
+    public function createPersonInUnit($id_unit, Request $request){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|min:2|string',
+            'birthdate' => 'required|date',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors()->first());
+        }
+
+        $person = new UnitPeople();
+        $person->name = $request->input('name');
+        $person->birthdate = $request->input('birthdate');
+        $person->id_unit = $id_unit;
+        $person->save();
+
+        return response()->json([
+           'error' => false,
+           'person' => $person 
         ]);
     }
 }
