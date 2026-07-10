@@ -46,4 +46,22 @@ class FoundAndLostController extends Controller
             'losts' => $foundAndLost
         ]);
     }
+
+    public function updateFoundAndLost($id, Request $request){
+        if(!$request && !in_array($request->input('status'), ['LOST', 'FOUND'])){
+            return response()->json([
+                'error' => true,
+                'message' => 'Invalid status'
+            ]);
+        }
+
+        $found_and_lost_for_id = FoundAndLost::where('id', $id)->first();
+        $found_and_lost_for_id->status = $request->input('status');
+        $found_and_lost_for_id->save();
+
+        return response()->json([
+            'error' => false,
+            'message' => 'status modified'
+        ]);
+    }
 }
