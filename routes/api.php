@@ -40,7 +40,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/found-and-lost', [FoundAndLostController::class, 'setFoundAndLost']);
     Route::put('/found-and-lost/{id}', [FoundAndLostController::class, 'updateFoundAndLost']);
 
-    Route::get('/units/{id}', [UnitController::class, 'getById']);
+    Route::get('/units/{id}', [UnitController::class, 'getByIdUnit']);
     Route::post('/units/{param}/addPerson', [UnitController::class, 'createPersonInUnit']);
     Route::post('/units/{param}/addPet', [UnitController::class, 'createPetInUnit']);
     Route::post('/units/{param}/addVehicle', [UnitController::class, 'createVehicleInUnit']);
