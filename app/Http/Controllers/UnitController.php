@@ -37,7 +37,7 @@ class UnitController extends Controller
             'birthdate' => 'required|date',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors()->first());
+            return response()->json(['error' => true, 'message' => $validator->errors()->first()]);
         }
 
         $person = new UnitPeople();
@@ -49,6 +49,50 @@ class UnitController extends Controller
         return response()->json([
            'error' => false,
            'person' => $person 
+        ]);
+    }
+
+    public function createPetInUnit($id_unit, Request $request){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|min:2|string',
+            'race' => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json(['error' => true, 'message' => $validator->errors()->first()]);
+        }
+
+        $pets = new UnitPet();
+        $pets->name = $request->input('name');
+        $pets->race = $request->input('race');
+        $pets->id_unit = $id_unit;
+        $pets->save();
+
+        return response()->json([
+           'error' => false,
+           'pets' => $pets 
+        ]);
+    }
+
+    public function createVehicleInUnit($id_unit, Request $request){
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|min:2|string',
+            'color' => 'required|string',
+            'plate' => 'required|string'
+        ]);
+        if($validator->fails()){
+            return response()->json(['error' => true, 'message' => $validator->errors()->first()]);
+        }
+
+        $vehicles = new UnitVehicle();
+        $vehicles->title = $request->input('title');
+        $vehicles->color = $request->input('color');
+        $vehicles->plate = $request->input('plate');
+        $vehicles->id_unit = $id_unit;
+        $vehicles->save();
+
+        return response()->json([
+           'error' => false,
+           'vehicles' => $vehicles 
         ]);
     }
 }
