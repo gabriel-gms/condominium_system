@@ -44,9 +44,9 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/units/{param}/addPerson', [UnitController::class, 'createPersonInUnit']);
     Route::post('/units/{param}/addPet', [UnitController::class, 'createPetInUnit']);
     Route::post('/units/{param}/addVehicle', [UnitController::class, 'createVehicleInUnit']);
-    Route::delete('/units/{param}/addPerson', [UnitController::class, 'removePersonInUnit']);
-    Route::delete('/units/{param}/addPet', [UnitController::class, 'removePetInUnit']);
-    Route::delete('/units/{param}/addVehicle', [UnitController::class, 'removeVehicleInUnit']);
+    Route::delete('/units/{param}/rmPerson', [UnitController::class, 'removePersonInUnit']);
+    Route::delete('/units/{param}/rmPet', [UnitController::class, 'removePetInUnit']);
+    Route::delete('/units/{param}/rmVehicle', [UnitController::class, 'removeVehicleInUnit']);
 
     Route::get('/reservations', [ReservationController::class, 'getResevations']);
     Route::get('/myreservations', [ReservationController::class, 'getMyResevations']);

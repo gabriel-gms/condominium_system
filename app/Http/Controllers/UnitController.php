@@ -95,4 +95,52 @@ class UnitController extends Controller
            'vehicles' => $vehicles 
         ]);
     }
+
+    public function removePersonInUnit($id){
+        if(empty($id)){
+            return response()->json([
+                'eroor' => true,
+                'message' => 'id expected'
+            ]);
+        }
+
+        UnitPeople::where('id', $id)->delete();
+
+        return response()->json([
+            'error' => false,
+            'message' => 'delete operation success'
+        ]);
+    }
+
+    public function removePetInUnit($id){
+        if(empty($id)){
+            return response()->json([
+                'eroor' => true,
+                'message' => 'id expected'
+            ]);
+        }
+
+        UnitPet::where('id', $id)->delete();
+
+        return response()->json([
+            'error' => false,
+            'message' => 'delete operation success'
+        ]);
+    }
+
+    public function removeVehicleInUnit($id){
+        if(empty($id)){
+            return response()->json([
+                'eroor' => true,
+                'message' => 'id expected'
+            ]);
+        }
+
+        UnitVehicle::where('id', $id)->delete();
+
+        return response()->json([
+            'error' => false,
+            'message' => 'delete operation success'
+        ]);
+    }
 }
