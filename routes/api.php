@@ -48,10 +48,10 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::delete('/units/{param}/rmPet', [UnitController::class, 'removePetInUnit']);
     Route::delete('/units/{param}/rmVehicle', [UnitController::class, 'removeVehicleInUnit']);
 
-    Route::get('/reservations', [ReservationController::class, 'getResevations']);
-    Route::get('/myreservations', [ReservationController::class, 'getMyResevations']);
-    Route::delete('/myreservations', [ReservationController::class, 'deleteMyResevations']);
-    Route::post('/reservations/{param}', [ReservationController::class, 'createResevation']);
+    Route::get('/reservations', [ReservationController::class, 'getReservations']);
+    Route::get('/myreservations', [ReservationController::class, 'getMyReservations']);
+    Route::delete('/myreservations', [ReservationController::class, 'deleteMyReservations']);
+    Route::post('/reservations/{param}', [ReservationController::class, 'createReservation']);
     Route::get('/reservations/{param}/disableddates', [ReservationController::class, 'getDisabledDates']);
     Route::get('/reservations/{param}/times', [ReservationController::class, 'times']);
 });
