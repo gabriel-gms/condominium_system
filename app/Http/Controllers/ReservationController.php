@@ -15,29 +15,57 @@ class ReservationController extends Controller
         $days_helper = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
     
         foreach($areas as $area){
-            $allowed_days = explode(',', $area['days']);
-            $start_day = intval(current($allowed_days));
-            $available_days = [];
-            $available_days[] = $days_helper[$start_day];
-            array_shift($allowed_days);
-            
-            for($i = 0; $i<count($allowed_days) - 1; $i++){
-                $reload_sequence = false;
-                if(intval($allowed_days[$i]) + 1 !== intval($allowed_days[$i + 1])){
-                    $available_days[] = $days_helper[$allowed_days[$i]];
-                    $reload_sequence = true;
-                    if($reload_sequence) $available_days[] = $days_helper[$allowed_days[$i+1]];
-                } else {
-                    $available_days[] = $days_helper[$allowed_days[$i]];
+            $day_list = explode(',', $area['days']);
+
+            $days_groups = [];
+
+            $last_day = intval(current($day_list));
+            $days_groups[] = $days_helper[$last_day];
+            array_shift($day_list);
+
+            foreach($day_list as $day){
+                if(intval($day) != $last_day+1){
+                    $days_groups[] = $days_helper[$last_day];
+                    $days_groups[] = $days_helper[$day];
                 }
+                $last_day = intval($day);
             }
-            $available_days[] = $days_helper[end($allowed_days)];
-            echo "Area ".$area->title."\n";
-            print_r($available_days);
+
+            $days_groups[] = $days_helper[end($day_list)];
+
+            $day_week = '';
+            $date = [];
+            $count_double = 1;
+            foreach($days_groups as $day){
+                if($count_double <= 1){
+                    $day_week .= $day."-";
+                    $count_double++;
+                } else {
+                    $day_week .= $day;
+                    $count_double--;
+                    array_push($date, $day_week);
+                    $day_week = '';
+                }
+
+            }
+
+            $start = date('H:i', strtotime($area['start_time']));
+            $end = date('H:i', strtotime($area['end_time']));
+            foreach($date as $date_key => $hour){
+                $date[$date_key] .= " de ".$start." as ".$end;
+            }
+
+            $array[] = [
+                'id' => $area['id'],
+                'cover' => asset('storage/'.$area['cover']),
+                'title' => $area['title'],
+                'dates' => $date
+            ];
         }
 
         return response()->json([
-            'error' => false 
+            'error' => false,
+            'areas' => $array 
         ]);
     }
 
@@ -87,4 +115,6 @@ class ReservationController extends Controller
             ]);
         }
     }
+
+    public function getDisabledDates
 }
