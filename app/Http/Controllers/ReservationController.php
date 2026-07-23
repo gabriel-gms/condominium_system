@@ -116,5 +116,36 @@ class ReservationController extends Controller
         }
     }
 
-    public function getDisabledDates
+    public function getDisabledDates($id_area){
+        $area = Area::find($id_area);
+        if(!$area || $id_area == '' || $id_area === null){
+            return response()->json([
+                'error' => true,
+                'message' => 'area do not exists'
+            ]);
+        }
+
+        $disable_days = [];
+        for($i=0;$i<7;$i++){
+            if(!in_array($i, explode(',',$area['days']))){
+                array_push($disable_days, $i);
+            }
+        }
+
+        $array_disable_days = [];
+        $date_now = time();
+        $three_months_later = strtotime('+3 months');
+        for(
+            $date_now; 
+            $date_now < $three_months_later; 
+            $date_now = strtotime('+1 day', $date_now)
+        ){
+            $week_day = date('w', $date_now);
+            if(in_array($week_day, $disable_days)){
+                $array_disable_days[] = date('Y-m-d', $date_now);
+            }
+        }
+
+        print_r($array_disable_days);
+    }
 }
